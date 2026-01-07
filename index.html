@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FM Gopika - Retro Radio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,700&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #8fa14b;
+            --radio-body: #f1ede4;
+            --accent-brown: #5c4033;
+            --green-power: #4CAF50;
+            --red-power: #af4c4c;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #a4b465 0%, #7d8d3b 100%);
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--accent-brown);
+            overflow-x: hidden;
+        }
+
+        /* Header & Power Switch */
+        header {
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .power-switch {
+            width: 60px;
+            height: 30px;
+            background-color: var(--red-power);
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .power-switch.on { background-color: var(--green-power); }
+
+        .switch-circle {
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .power-switch.on .switch-circle { left: 33px; }
+
+        /* Greeting */
+        .greeting {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            margin: 20px 0;
+            padding: 0 20px;
+            line-height: 1.4;
+        }
+
+        /* Radio Design */
+        .radio-container {
+            width: 320px;
+            height: 280px;
+            background: var(--radio-body);
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 8px solid #ddd;
+        }
+
+        .grill {
+            width: 90%;
+            height: 120px;
+            background: repeating-linear-gradient(0deg, #5c4033 0px, #5c4033 4px, #e5d3b3 4px, #e5d3b3 8px);
+            border-radius: 10px;
+            margin-top: 10px;
+            position: relative;
+            overflow: visible;
+        }
+
+        /* Music Animation */
+        .note {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            bottom: 50%;
+            left: 50%;
+            pointer-events: none;
+        }
+
+        @keyframes floatNote {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(var(--x), -150px) rotate(var(--r)); opacity: 0; }
+        }
+
+        .tuning-dial {
+            width: 80%;
+            height: 30px;
+            background: #c19a6b;
+            margin-top: 20px;
+            border-radius: 5px;
+            border: 2px solid #a67c52;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dial-knobs {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .knob {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #ccc, #888);
+            border-radius: 50%;
+            border: 2px solid #666;
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            width: 320px;
+            background: rgba(255,255,255,0.2);
+            margin-top: 30px;
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #d4af37;
+            border: 3px solid #b8860b;
+            color: white;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px #996515;
+        }
+
+        .control-btn:active {
+            box-shadow: 0 0px #996515;
+            transform: translateY(4px);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            font-size: 12px;
+        }
+
+        input[type=range] {
+            flex-grow: 1;
+            accent-color: #d4af37;
+        }
+
+        /* Comment Section */
+        .comment-section {
+            width: 340px;
+            background: #fff;
+            border-radius: 30px;
+            margin-top: 20px;
+            padding: 20px;
+            margin-bottom: 50px;
+        }
+
+        .comment-input-wrapper {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 5px 15px;
+            align-items: center;
+        }
+
+        .comment-input-wrapper input {
+            border: none;
+            background: none;
+            flex-grow: 1;
+            padding: 10px;
+            outline: none;
+        }
+
+        .comment-display {
+            height: 100px;
+            overflow-y: auto;
+            margin-top: 15px;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        footer {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            padding-bottom: 20px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">FM Gopika</div>
+    <div class="power-switch" id="powerBtn">
+        <div class="switch-circle"></div>
+    </div>
+</header>
+
+<div class="greeting">
+    Hey Take a Break to hear this beautiful songs.<br>
+    Take a seat, with a cofee and enjoy it.
+</div>
+
+<div class="radio-container">
+    <div class="grill" id="grill">
+        </div>
+    <div class="tuning-dial">
+        <img src="https://cdn-icons-png.flaticon.com/512/107/107799.png" width="80%" height="10" style="opacity: 0.5;">
+    </div>
+    <div class="dial-knobs">
+        <div class="knob"></div>
+        <div class="knob"></div>
+    </div>
+</div>
+
+<div class="controls-panel">
+    <div class="btn-group">
+        <button class="control-btn" onclick="prevTrack()"><span>Prev</span></button>
+        <button class="control-btn" onclick="setSpeed(0.5)"><span>-1.5X</span></button>
+        <button class="control-btn" id="playPauseBtn" onclick="togglePlay()"><span>Play</span></button>
+        <button class="control-btn" onclick="setSpeed(1.5)"><span>1.5X</span></button>
+        <button class="control-btn" onclick="nextTrack()"><span>Next</span></button>
+    </div>
+    <div class="volume-container">
+        <span>-ve</span>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
+        <span>+ve</span>
+    </div>
+    <p style="font-size: 12px; margin-top: 10px;">Volume</p>
+</div>
+
+<div class="comment-section">
+    <p style="text-align: center; font-size: 14px; font-family: 'Playfair Display';">Put down a comment for this songs...</p>
+    <div class="comment-input-wrapper">
+        <span onclick="alert('Emoji Picker Triggered!')" style="cursor:pointer">🥰</span>
+        <input type="text" id="commentInput" placeholder="Write down your comments">
+        <button onclick="addComment()" style="border:none; background:none; cursor:pointer">➤</button>
+    </div>
+    <div class="comment-display" id="commentDisplay"></div>
+</div>
+
+<footer id="footer">
+    © 2024 Aswin Sonuzzz. All Rights Reserved.
+</footer>
+
+<audio id="mainAudio" src="your-music-file.mp3"></audio>
+<audio id="switchSound" src="switch-sound.mp3"></audio>
+<audio id="grainSound" src="radio-static.mp3"></audio>
+
+<script>
+    const powerBtn = document.getElementById('powerBtn');
+    const audio = document.getElementById('mainAudio');
+    const switchSound = document.getElementById('switchSound');
+    const grainSound = document.getElementById('grainSound');
+    const grill = document.getElementById('grill');
+    const volumeSlider = document.getElementById('volumeSlider');
+    let isON = false;
+
+    // Power Toggle
+    powerBtn.addEventListener('click', () => {
+        isON = !isON;
+        powerBtn.classList.toggle('on');
+        switchSound.play();
+        
+        if(isON) {
+            audio.play();
+            startNotes();
+        } else {
+            audio.pause();
+            stopNotes();
+        }
+    });
+
+    // Volume Control
+    volumeSlider.addEventListener('input', (e) => {
+        audio.volume = e.target.value;
+    });
+
+    // Speed Control
+    function setSpeed(speed) {
+        if(isON) audio.playbackRate = speed;
+    }
+
+    // Play/Pause
+    function togglePlay() {
+        if(!isON) return;
+        if (audio.paused) audio.play();
+        else audio.pause();
+    }
+
+    // Next/Prev with Grain Effect
+    function nextTrack() {
+        if(!isON) return;
+        grainSound.play();
+        // Here you would change audio.src to the next track
+        console.log("Skipping to next track...");
+    }
+
+    function prevTrack() {
+        if(!isON) return;
+        grainSound.play();
+        console.log("Going to previous track...");
+    }
+
+    // Music Note Animation
+    let noteInterval;
+    function startNotes() {
+        noteInterval = setInterval(() => {
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.innerText = '🎶';
+            note.style.setProperty('--x', Math.random() * 100 - 50 + 'px');
+            note.style.setProperty('--r', Math.random() * 360 + 'deg');
+            note.style.animation = `floatNote ${1 + Math.random()}s ease-out forwards`;
+            grill.appendChild(note);
+            setTimeout(() => note.remove(), 2000);
+        }, 400);
+    }
+
+    function stopNotes() {
+        clearInterval(noteInterval);
+    }
+
+    // Comment Functionality
+    function addComment() {
+        const input = document.getElementById('commentInput');
+        const display = document.getElementById('commentDisplay');
+        if(input.value.trim() === "") return;
+
+        const newComment = document.createElement('div');
+        newComment.style.marginBottom = "5px";
+        newComment.innerText = "• " + input.value;
+        display.prepend(newComment);
+        
+        // Save to LocalStorage
+        let comments = JSON.parse(localStorage.getItem('radioComments') || "[]");
+        comments.push(input.value);
+        localStorage.setItem('radioComments', JSON.stringify(comments));
+        
+        input.value = "";
+    }
+
+    // Load Comments on start
+    window.onload = () => {
+        let comments = JSON.parse(localStorage.getItem('radioComments') || "[]");
+        const display = document.getElementById('commentDisplay');
+        comments.forEach(c => {
+            const div = document.createElement('div');
+            div.innerText = "• " + c;
+            display.prepend(div);
+        });
+    };
+</script>
+
+</body>
+</html>
